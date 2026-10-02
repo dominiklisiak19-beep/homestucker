@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interaktywna strona poświęcona muzyce, gatunkom i artystom.">
+  <title>SoundWave - Świat Muzyki</title>
+
+  <style>
+    :root {
+      --bg: #09090f;
+      --surface: rgba(255, 255, 255, 0.07);
+      --surface-hover: rgba(255, 255, 255, 0.12);
+      --text: #f7f7fb;
+      --muted: #aaa9b7;
+      --primary: #9b5cff;
+      --secondary: #ff3e81;
+      --accent: #36d9c4;
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+      --player-height: 92px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(155, 92, 255, 0.22), transparent 27%),
+        radial-gradient(circle at 90% 30%, rgba(255, 62, 129, 0.16), transparent 27%),
+        var(--bg);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    body.light {
+      --bg: #f5f3fa;
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-hover: rgba(255, 255, 255, 0.95);
+      --text: #17141f;
+      --muted: #666170;
+      --border: rgba(25, 20, 35, 0.1);
+      --shadow: 0 20px 60px rgba(47, 32, 73, 0.13);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+    }
+
+    .container {
+      width: min(1160px, calc(100% - 40px));
+      margin-inline: auto;
+    }
+
+    .glass {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    header {
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      right: 0;
+      left: 0;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 76%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    nav {
+      display: flex;
+      min-height: 74px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .logo-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 8px 28px rgba(155, 92, 255, 0.45);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .nav-links a {
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .icon-button,
+    .player-button {
+      display: grid;
+      cursor: pointer;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      transition: 0.2s ease;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+    }
+
+    .icon-button:hover,
+    .player-button:hover {
+      background: var(--surface-hover);
+      transform: translateY(-2px);
+    }
+
+    .menu-button {
+      display: none;
+    }
+
+    .hero {
+      display: grid;
+      min-height: 720px;
+      padding-top: 130px;
+      padding-bottom: 70px;
+      align-items: center;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 70px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 18px;
+      padding: 8px 13px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--surface);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 16px currentColor;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(3.4rem, 8vw, 7rem);
+      line-height: 0.92;
+      letter-spacing: -0.075em;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, var(--primary), var(--secondary), #ffad4d);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin-top: 25px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 50px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 22px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      font-weight: 800;
+      transition: 0.25s ease;
+    }
+
+    .button:hover {
+      background: var(--surface-hover);
+      transform: translateY(-3px);
+    }
+
+    .button.primary {
+      border: none;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 13px 35px rgba(155, 92, 255, 0.35);
+    }
+
+    .visual {
+      position: relative;
+      display: grid;
+      min-height: 480px;
+      place-items: center;
+    }
+
+    .orb {
+      position: absolute;
+      width: 430px;
+      max-width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, rgba(255,255,255,0.92), transparent 8%),
+        radial-gradient(circle at 42% 36%, #ff77aa, transparent 18%),
+        radial-gradient(circle at 55% 55%, #8338ec, transparent 55%),
+        #251039;
+      box-shadow:
+        0 0 100px rgba(155, 92, 255, 0.45),
+        inset -40px -30px 80px rgba(0,0,0,0.42);
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .vinyl {
+      position: absolute;
+      width: 300px;
+      max-width: 74%;
+      aspect-ratio: 1;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, #ff3e81 0 7%, #ffe07a 7.3% 10%, #111 10.5% 17%, transparent 17.5%),
+        repeating-radial-gradient(circle, #17171b 0 5px, #29292e 6px, #111 8px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+      animation: spin 13s linear infinite;
+    }
+
+    .equalizer {
+      position: absolute;
+      right: 2%;
+      bottom: 7%;
+      display: flex;
+      height: 100px;
+      align-items: end;
+      gap: 7px;
+      padding: 16px;
+      border-radius: 18px;
+    }
+
+    .equalizer span {
+      width: 8px;
+      border-radius: 10px;
+      background: linear-gradient(to top, var(--secondary), var(--accent));
+      animation: beat 1s ease-in-out infinite alternate;
+    }
+
+    .equalizer span:nth-child(1) { height: 40%; }
+    .equalizer span:nth-child(2) { height: 80%; animation-delay: -0.3s; }
+    .equalizer span:nth-child(3) { height: 55%; animation-delay: -0.7s; }
+    .equalizer span:nth-child(4) { height: 95%; animation-delay: -0.2s; }
+    .equalizer span:nth-child(5) { height: 65%; animation-delay: -0.6s; }
+
+    section {
+      padding: 90px 0;
+    }
+
+    .section-heading {
+      display: flex;
+      margin-bottom: 30px;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .section-heading h2 {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      line-height: 1;
+      letter-spacing: -0.055em;
+    }
+
+    .section-heading p {
+      max-width: 490px;
+      color: var(--muted);
+    }
+
+    .genre-grid,
+    .track-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .genre-card,
+    .track-card,
+    .about-card {
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+
+    .genre-card {
+      position: relative;
+      min-height: 240px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .genre-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .genre-card::before {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background: linear-gradient(to top, rgba(5, 5, 10, 0.88), transparent 70%);
+    }
+
+    .genre-card:nth-child(1) { background: linear-gradient(135deg, #ff3e81, #ff8a3d); }
+    .genre-card:nth-child(2) { background: linear-gradient(135deg, #6741d9, #3b82f6); }
+    .genre-card:nth-child(3) { background: linear-gradient(135deg, #0f766e, #35d0ba); }
+    .genre-card:nth-child(4) { background: linear-gradient(135deg, #4527a0, #c13cff); }
+
+    .genre-art {
+      position: absolute;
+      top: -25px;
+      right: -25px;
+      font-size: 8rem;
+      opacity: 0.22;
+      transform: rotate(15deg);
+    }
+
+    .genre-info {
+      position: absolute;
+      right: 20px;
+      bottom: 18px;
+      left: 20px;
+      z-index: 1;
+    }
+
+    .genre-info h3 {
+      font-size: 1.55rem;
+    }
+
+    .genre-info p {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.9rem;
+    }
+
+    .track-card {
+      padding: 14px;
+      transition: 0.25s ease;
+    }
+
+    .track-card:hover {
+      background: var(--surface-hover);
+      transform: translateY(-6px);
+    }
+
+    .cover {
+      position: relative;
+      display: grid;
+      overflow: hidden;
+      aspect-ratio: 1;
+      place-items: center;
+      border-radius: 16px;
+    }
+
+    .cover::after {
+      width: 42%;
+      aspect-ratio: 1;
+      content: "";
+      border: 13px solid rgba(10,10,15,0.74);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 0 0 20px rgba(0,0,0,0.12);
+    }
+
+    .cover-1 { background: linear-gradient(135deg, #ff4d80, #ffb347); }
+    .cover-2 { background: linear-gradient(135deg, #4338ca, #22d3ee); }
+    .cover-3 { background: linear-gradient(135deg, #0f766e, #84cc16); }
+    .cover-4 { background: linear-gradient(135deg, #7e22ce, #f43f5e); }
+
+    .track-play {
+      position: absolute;
+      z-index: 2;
+      right: 12px;
+      bottom: 12px;
+      display: grid;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      place-items: center;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      background: rgba(10,10,15,0.8);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+      transition: 0.2s ease;
+    }
+
+    .track-play:hover {
+      transform: scale(1.08);
+    }
+
+    .track-meta {
+      padding: 15px 4px 6px;
+    }
+
+    .track-meta h3 {
+      font-size: 1.04rem;
+    }
+
+    .track-meta p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .about-card {
+      display: grid;
+      padding: 45px;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+    }
+
+    .about-card h2 {
+      font-size: clamp(2rem, 5vw, 3.7rem);
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+    }
+
+    .about-card p {
+      color: var(--muted);
+    }
+
+    .stats {
+      display: grid;
+      margin-top: 28px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      padding: 20px 12px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.7rem;
+    }
+
+    footer {
+      padding: 35px 0 calc(var(--player-height) + 35px);
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .player {
+      position: fixed;
+      z-index: 110;
+      right: 16px;
+      bottom: 14px;
+      left: 16px;
+      display: grid;
+      min-height: var(--player-height);
+      padding: 12px 20px;
+      border-radius: 24px;
+      grid-template-columns: 1fr 1.4fr 1fr;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .now-playing {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mini-cover {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 auto;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .now-playing div {
+      min-width: 0;
+    }
+
+    .now-playing strong,
+    .now-playing small {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .now-playing small {
+      color: var(--muted);
+    }
+
+    .player-center {
+      display: grid;
+      gap: 8px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+    }
+
+    .player-button {
+      width: 34px;
+      height: 34px;
+    }
+
+    .player-button.main {
+      width: 45px;
+      height: 45px;
+      border: none;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .range {
+      width: 100%;
+      height: 5px;
+      cursor: pointer;
+      appearance: none;
+      border-radius: 999px;
+      background: linear-gradient(to right, var(--primary) 0 32%, rgba(255,255,255,0.16) 32%);
+    }
+
+    .range::-webkit-slider-thumb {
+      width: 14px;
+      height: 14px;
+      appearance: none;
+      border: 3px solid var(--text);
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .volume {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .volume .range {
+      max-width: 130px;
+      background: linear-gradient(to right, var(--accent) 0 70%, rgba(255,255,255,0.16) 70%);
+    }
+
+    @keyframes float {
+      50% { transform: translateY(-18px) rotate(3deg); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes beat {
+      to { height: 22%; }
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        min-height: auto;
+        padding-top: 150px;
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .hero p {
+        margin-inline: auto;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .visual {
+        min-height: 390px;
+      }
+
+      .genre-grid,
+      .track-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .about-card {
+        grid-template-columns: 1fr;
+      }
+
+      .player {
+        grid-template-columns: 1fr 1.2fr;
+      }
+
+      .volume {
+        display: none;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .container {
+        width: min(100% - 26px, 1160px);
+      }
+
+      .menu-button {
+        display: grid;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: 74px;
+        right: 13px;
+        left: 13px;
+        display: none;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--bg);
+        box-shadow: var(--shadow);
+        flex-direction: column;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      h1 {
+        font-size: clamp(3.25rem, 18vw, 5.4rem);
+      }
+
+      section {
+        padding: 70px 0;
+      }
+
+      .section-heading {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .genre-grid,
+      .track-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .genre-card {
+        min-height: 200px;
+      }
+
+      .about-card {
+        padding: 28px 20px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .player {
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+        padding: 10px 13px;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+
+      .player-center {
+        display: block;
+      }
+
+      .progress-wrap {
+        display: none;
+      }
+
+      .controls .secondary-control {
+        display: none;
+      }
+
+      .mini-cover {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="container" aria-label="Główna nawigacja">
+      <a href="#start" class="logo">
+        <span class="logo-mark" aria-hidden="true">♫</span>
+        SoundWave
+      </a>
+
+      <div class="nav-links" id="navLinks">
+        <a href="#start">Start</a>
+        <a href="#gatunki">Gatunki</a>
+        <a href="#utwory">Utwory</a>
+        <a href="#o-muzyce">O muzyce</a>
+      </div>
+
+      <div style="display:flex; gap:8px">
+        <button class="icon-button" id="themeButton" aria-label="Zmień motyw">☀</button>
+        <button class="icon-button menu-button" id="menuButton" aria-label="Otwórz menu">☰</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container" id="start">
+      <div>
+        <span class="eyebrow"><span class="dot"></span> Muzyka bez granic</span>
+        <h1>Poczuj każdy <span class="gradient-text">dźwięk.</span></h1>
+        <p>
+          Odkrywaj nowe brzmienia, poznawaj różne gatunki i pozwól muzyce
+          towarzyszyć Ci w każdej chwili.
+        </p>
+
+        <div class="hero-actions">
+          <a class="button primary" href="#utwory">▶ Zacznij słuchać</a>
+          <a class="button" href="#gatunki">Odkryj gatunki</a>
+        </div>
+      </div>
+
+      <div class="visual" aria-label="Dekoracja przedstawiająca płytę winylową">
+        <div class="orb"></div>
+        <div class="vinyl"></div>
+        <div class="equalizer glass" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="gatunki">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Znajdź swój <span class="gradient-text">rytm</span></h2>
+          <p>Każdy gatunek ma własną historię, energię i wyjątkowy sposób opowiadania o emocjach.</p>
+        </div>
+
+        <div class="genre-grid">
+          <article class="genre-card">
+            <span class="genre-art" aria-hidden="true">♬</span>
+            <div class="genre-info">
+              <h3>Pop</h3>
+              <p>Energia, melodie i wielkie refreny</p>
+            </div>
+          </article>
+
+          <article class="genre-card">
+            <span class="genre-art" aria-hidden="true">♩</span>
+            <div class="genre-info">
+              <h3>Elektronika</h3>
+              <p>Syntezatory i futurystyczne brzmienia</p>
+            </div>
+          </article>
+
+          <article class="genre-card">
+            <span class="genre-art" aria-hidden="true">♭</span>
+            <div class="genre-info">
+              <h3>Jazz</h3>
+              <p>Improwizacja, wolność i charakter</p>
+            </div>
+          </article>
+
+          <article class="genre-card">
+            <span class="genre-art" aria-hidden="true">♫</span>
+            <div class="genre-info">
+              <h3>Hip-hop</h3>
+              <p>Rytm, słowo i miejska kultura</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="utwory">
+      <div class="container">
+        <div class="section-heading">
+          <h2>Popularne <span class="gradient-text">utwory</span></h2>
+          <p>Przykładowa kolekcja dźwięków stworzona na potrzeby demonstracji odtwarzacza.</p>
+        </div>
+
+        <div class="track-grid">
+          <article class="track-card glass">
+            <div class="cover cover-1">
+              <button class="track-play" data-title="Neonowe niebo" data-artist="Luna Echo" aria-label="Odtwórz Neonowe niebo">▶</button>
+            </div>
+            <div class="track-meta">
+              <h3>Neonowe niebo</h3>
+              <p>Luna Echo · Pop</p>
+            </div>
+          </article>
+
+          <article class="track-card glass">
+            <div class="cover cover-2">
+              <button class="track-play" data-title="Poza czasem" data-artist="Nova Pulse" aria-label="Odtwórz Poza czasem">▶</button>
+            </div>
+            <div class="track-meta">
+              <h3>Poza czasem</h3>
+              <p>Nova Pulse · Elektronika</p>
+            </div>
+          </article>
+
+          <article class="track-card glass">
+            <div class="cover cover-3">
+              <button class="track-play" data-title="Zielone światło" data-artist="Mellow Trio" aria-label="Odtwórz Zielone światło">▶</button>
+            </div>
+            <div class="track-meta">
+              <h3>Zielone światło</h3>
+              <p>Mellow Trio · Jazz</p>
+            </div>
+          </article>
+
+          <article class="track-card glass">
+            <div class="cover cover-4">
+              <button class="track-play" data-title="Nocne miasto" data-artist="Metro Flow" aria-label="Odtwórz Nocne miasto">▶</button>
+            </div>
+            <div class="track-meta">
+              <h3>Nocne miasto</h3>
+              <p>Metro Flow · Hip-hop</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="o-muzyce">
+      <div class="container">
+        <article class="about-card glass">
+          <div>
+            <span class="eyebrow"><span class="dot"></span> Uniwersalny język</span>
+            <h2>Muzyka łączy ludzi i <span class="gradient-text">emocje.</span></h2>
+          </div>
+
+          <div>
+            <p>
+              Muzyka towarzyszy ludzkości od tysięcy lat. Pomaga wyrażać uczucia,
+              zachowywać wspomnienia i budować więzi niezależnie od języka czy miejsca.
+              Jeden rytm może dodać energii, a spokojna melodia przynieść wyciszenie.
+            </p>
+
+            <div class="stats">
+              <div class="stat"><strong>∞</strong><span>emocji</span></div>
+              <div class="stat"><strong>7</strong><span>podstawowych nut</span></div>
+              <div class="stat"><strong>1</strong><span>wspólny język</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>SoundWave · Strona demonstracyjna poświęcona muzyce</p>
+    </div>
+  </footer>
+
+  <aside class="player glass" aria-label="Odtwarzacz muzyki">
+    <div class="now-playing">
+      <div class="mini-cover"></div>
+      <div>
+        <strong id="currentTitle">Neonowe niebo</strong>
+        <small id="currentArtist">Luna Echo</small>
+      </div>
+    </div>
+
+    <div class="player-center">
+      <div class="controls">
+        <button class="player-button secondary-control" aria-label="Poprzedni utwór">◀</button>
+        <button class="player-button main" id="mainPlay" aria-label="Odtwórz">▶</button>
+        <button class="player-button secondary-control" aria-label="Następny utwór">▶▶</button>
+      </div>
+
+      <div class="progress-wrap">
+        <span id="currentTime">0:42</span>
+        <input class="range" id="progress" type="range" min="0" max="100" value="32" aria-label="Postęp utworu">
+        <span>3:18</span>
+      </div>
+    </div>
+
+    <div class="volume">
+      <span aria-hidden="true">🔊</span>
+      <input class="range" type="range" min="0" max="100" value="70" aria-label="Głośność">
+    </div>
+  </aside>
+
+  <script>
+    const body = document.body;
+    const themeButton = document.getElementById("themeButton");
+    const menuButton = document.getElementById("menuButton");
+    const navLinks = document.getElementById("navLinks");
+    const mainPlay = document.getElementById("mainPlay");
+    const currentTitle = document.getElementById("currentTitle");
+    const currentArtist = document.getElementById("currentArtist");
+    const progress = document.getElementById("progress");
+    const currentTime = document.getElementById("currentTime");
+    const trackButtons = document.querySelectorAll(".track-play");
+
+    let playing = false;
+
+    themeButton.addEventListener("click", () => {
+      body.classList.toggle("light");
+      themeButton.textContent = body.classList.contains("light") ? "☾" : "☀";
+    });
+
+    menuButton.addEventListener("click", () => {
+      navLinks.classList.toggle("open");
+    });
+
+    navLinks.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => navLinks.classList.remove("open"));
+    });
+
+    function updatePlayState(state) {
+      playing = state;
+      mainPlay.textContent = playing ? "❚❚" : "▶";
+      mainPlay.setAttribute("aria-label", playing ? "Wstrzymaj" : "Odtwórz");
+
+      trackButtons.forEach(button => {
+        button.textContent =
+          button.dataset.title === currentTitle.textContent && playing ? "❚❚" : "▶";
+      });
+    }
+
+    mainPlay.addEventListener("click", () => {
+      updatePlayState(!playing);
+    });
+
+    trackButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const selectedIsPlaying =
+          currentTitle.textContent === button.dataset.title && playing;
+
+        currentTitle.textContent = button.dataset.title;
+        currentArtist.textContent = button.dataset.artist;
+        progress.value = 0;
+        currentTime.textContent = "0:00";
+        updatePlayState(!selectedIsPlaying);
+      });
+    });
+
+    progress.addEventListener("input", () => {
+      const totalSeconds = 198;
+      const seconds = Math.round((progress.value / 100) * totalSeconds);
+      const minutes = Math.floor(seconds / 60);
+      const remaining = String(seconds % 60).padStart(2, "0");
+      currentTime.textContent = `${minutes}:${remaining}`;
+      progress.style.background =
+        `linear-gradient(to right, var(--primary) 0 ${progress.value}%, rgba(255,255,255,0.16) ${progress.value}%)`;
+    });
+  </script>
+</body>
+</html>
